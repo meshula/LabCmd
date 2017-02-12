@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-namespace LabRender {
+namespace lab {
 
     /*
 
@@ -183,4 +183,4 @@ namespace LabRender {
         LC_API void registerCommand(std::shared_ptr<Command> & cmd);
     };
 
-} // LabRender
+} // lab

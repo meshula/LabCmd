@@ -43,7 +43,7 @@ using namespace oscpkt;
 
 */
 
-namespace LabRender {
+namespace lab {
 
     using namespace std;
 
@@ -652,4 +652,4 @@ namespace LabRender {
         }
     }
 
-} // LabRender
+} // lab
