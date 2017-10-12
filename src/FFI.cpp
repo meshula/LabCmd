@@ -6,6 +6,8 @@
 #endif
 
 #include "FFI.h"
+#include "property.h"
+
 #include "oscpkt/oscpkt.hh"
 
 #include <iostream>

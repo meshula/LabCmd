@@ -31,7 +31,14 @@ endif()
 target_include_directories(LabCmd PRIVATE "${LABCMD_ROOT}/include")
 target_include_directories(LabCmd PRIVATE "${LOCAL_ROOT}/include")
 target_compile_definitions(LabCmd PRIVATE BUILDING_LABCMD=1)
+
+IF(WIN32)
 target_compile_definitions(LabCmd PUBLIC PLATFORM_WINDOWS=1)
+elseif(APPLE)
+target_compile_definitions(LabCmd PUBLIC PLATFORM_MACOS=1)
+else()
+target_compile_definitions(LabCmd PUBLIC PLATFORM_LINUX=1)
+endif()
 
 set_target_properties(LabCmd
     PROPERTIES
@@ -61,6 +68,10 @@ source_file(src/oscpkt/oscpkt.hh)
 source_file(src/oscpkt/udp.hh)
 source_file(src/webby/webby.c)
 source_file(src/webby/webby.h)
+source_file(src/delegate.hpp)
+source_file(src/event.hpp)
+source_file(src/signal.hpp)
+
 if (WIN32)
     source_file(src/webby/webby_win32.h)
 else()
@@ -71,5 +82,10 @@ install(
     FILES
         src/LabCmd.h
         src/FFI.h
+        src/delegate.hpp
+        src/event.hpp
+        src/signal.hpp
+        src/property.h
+
     DESTINATION
         include/LabCmd)
