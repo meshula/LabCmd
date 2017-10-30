@@ -16,6 +16,10 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/defaults
                       ${CMAKE_SOURCE_DIR}/cmake/modules
                       ${CMAKE_SOURCE_DIR}/cmake/macros)
 
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
+set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF"
+    CACHE STRING "" FORCE)
+
 include(CXXDefaults)
 include(Utilities)
 include(Packages)
@@ -89,3 +93,9 @@ install(
 
     DESTINATION
         include/LabCmd)
+
+install(
+    FILES
+        $<TARGET_PDB_FILE:LabCmd>
+    DESTINATION
+        bin OPTIONAL)
