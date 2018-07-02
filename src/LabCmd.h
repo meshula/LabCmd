@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef _MSC_VER
-#ifdef BUILDING_LABCMD
+#ifdef BUILDING_LabCmd
 #define LC_CAPI extern "C" __declspec(dllexport)
 #define LC_API __declspec(dllexport)
 #define LC_CLASS __declspec(dllexport)

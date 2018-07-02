@@ -1,7 +1,7 @@
 
 // Nick Porcino, ©2013, Apache 2.0
 
-#if defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(_CRT_SECURE_NO_WARNINGS)
 # define _CRT_SECURE_NO_WARNINGS
 #endif
 
