@@ -25,17 +25,17 @@ lab_library(LabCmd
     LIBRARIES
 
     INCLUDE_DIRS
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
 
     PUBLIC_HEADERS
-        src/LabCmd.h
-        src/FFI.h
+        include/LabCmd/LabCmd.h
+        include/LabCmd/FFI.h
+        include/LabCmd/delegate.hpp
+        include/LabCmd/event.hpp
+        include/LabCmd/signal.hpp
 
     PRIVATE_HEADERS
-        src/delegate.hpp
-        src/event.hpp
         src/property.h
-        src/signal.hpp
         src/json/json-forwards.h
         src/json/json.h
         src/oscpkt/oscpkt.hh

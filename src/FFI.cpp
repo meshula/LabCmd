@@ -5,7 +5,7 @@
 # define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#include "FFI.h"
+#include "LabCmd/FFI.h"
 #include "property.h"
 
 #include "oscpkt/oscpkt.hh"
@@ -35,14 +35,12 @@ using std::cerr;
 using namespace oscpkt;
 
 /*
-
 /labrender/set,float,ack/path/to/entity (value) -> /ack/path/to/entity ()
 /labrender/set,float/path/to/entity (value)
 
 /labrender/control/path/to/entity (sexpr) -> /control/path/to/entity (ack)
 /labrender/value/path/to/entity () -> /value/path/to/entity (value)
 /labrender/state/path/to/entity () -> /state/path/to/entity (state)
-
 */
 
 namespace lab {
