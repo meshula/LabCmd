@@ -33,6 +33,7 @@ lab_library(LabCmd
         include/LabCmd/delegate.hpp
         include/LabCmd/event.hpp
         include/LabCmd/signal.hpp
+        include/LabCmd/Queue.h
 
     PRIVATE_HEADERS
         src/property.h
