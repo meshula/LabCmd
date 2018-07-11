@@ -3,6 +3,9 @@
 #include <array>
 #include <atomic>
 #include <condition_variable>
+#include <mutex>
+#include <queue>
+
 
 
 namespace polymer
@@ -33,6 +36,16 @@ namespace polymer
             while (!empty()) pop_front();
             buffer_node_t* front = _head.load(std::memory_order_relaxed);
             delete front;
+        }
+
+        bool emplace_back(T && input)
+        {
+            buffer_node_t* node = new buffer_node_t();
+            node->data = std::move(input);
+            node->next.store(nullptr, std::memory_order_relaxed);
+            buffer_node_t* prevhead = _head.exchange(node, std::memory_order_acq_rel);
+            prevhead->next.store(node, std::memory_order_release);
+            return true;
         }
 
         bool emplace_back(const T & input)
@@ -82,6 +95,25 @@ namespace polymer
         : _count(0), _tail(0), _head(0) {}
 
         // thread safe
+        bool emplace_back(T && val)
+        {
+            size_t count = _count.fetch_add(1, std::memory_order_acquire);
+            if (count >= _buffer.size())
+            {
+                _count.fetch_sub(1, std::memory_order_release);
+                return false;   // queue is full
+            }
+
+            // get exclusive access to head
+            // relying on unsigned int wrap around to keep head increment atomic
+            size_t h = _head.fetch_add(1, std::memory_order_acquire) % _buffer.size();
+            _buffer[h] = std::move(val);
+
+            // using a pointer to the element as a flag that the value is consumable
+            _ready_buffer[h].store(&_buffer[h], std::memory_order_release);
+            return true;
+        }
+
         bool emplace_back(T const& val)
         {
             size_t count = _count.fetch_add(1, std::memory_order_acquire);
@@ -120,6 +152,63 @@ namespace polymer
         bool empty() const { return !_count; }
     };
 
+
+    // This is free and unencumbered software released into the public domain.
+    // Inspired by https://www.justsoftwaresolutions.co.uk/threading/implementing-a-thread-safe-queue-using-condition-variables.html
+
+    template<typename T>
+    class mpmc_queue_blocking
+    {
+        std::queue<T> queue;
+        mutable std::mutex mutex;
+        std::condition_variable condition;
+
+        mpmc_queue_blocking(const mpmc_queue_blocking &) = delete;
+        mpmc_queue_blocking & operator= (const mpmc_queue_blocking &) = delete;
+
+    public:
+        mpmc_queue_blocking() = default;
+
+        // Emplace a new value and possibly notify one of the threads calling 'wait_and_consume'
+        void emplace_back(T && value)
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            queue.push(std::move(value));
+            condition.notify_one();
+        }
+
+        void emplace_back(T const& value)
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            queue.push(value);
+            condition.notify_one();
+        }
+
+        // Blocking operation if queue is empty
+        T wait_and_pop_front()
+        {
+            std::unique_lock<std::mutex> lock(mutex);
+            while (queue.empty()) condition.wait(lock);
+            auto popped_value = std::move(queue.front());
+            queue.pop();
+            return popped_value;
+        }
+
+        // Permits polling threads to do something else if the queue is empty
+        std::pair<bool, T> pop_front()
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            if (queue.empty()) return {false, {}};
+            popped_value = std::move(queue.front());
+            queue.pop();
+            return {true, popped_value};
+        }
+
+        bool empty() const { std::unique_lock<std::mutex> lock(mutex); return queue.empty(); }
+        std::size_t size() const { return queue.size(); }
+    };
+
+
 } // end namespace polymer
 
 
@@ -127,4 +216,5 @@ namespace Lab
 {
     using polymer::mpsc_queue;
     using polymer::mpsc_bounded_queue;
+    using polymer::mpmc_queue_blocking;
 }
