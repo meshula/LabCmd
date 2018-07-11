@@ -48,7 +48,7 @@ namespace polymer
             return true;
         }
 
-        bool emplace_back(const T & input)
+        bool push_back(const T & input)
         {
             buffer_node_t* node = new buffer_node_t();
             node->data = input;
@@ -114,7 +114,7 @@ namespace polymer
             return true;
         }
 
-        bool emplace_back(T const& val)
+        bool push_back(T const& val)
         {
             size_t count = _count.fetch_add(1, std::memory_order_acquire);
             if (count >= _buffer.size())
@@ -177,7 +177,7 @@ namespace polymer
             condition.notify_one();
         }
 
-        void emplace_back(T const& value)
+        void push_back(T const& value)
         {
             std::lock_guard<std::mutex> lock(mutex);
             queue.push(value);
@@ -199,7 +199,7 @@ namespace polymer
         {
             std::lock_guard<std::mutex> lock(mutex);
             if (queue.empty()) return {false, {}};
-            popped_value = std::move(queue.front());
+            auto popped_value = std::move(queue.front());
             queue.pop();
             return {true, popped_value};
         }
