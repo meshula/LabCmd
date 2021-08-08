@@ -50,5 +50,5 @@ configure_file(LabCmdConfig.cmake.in "${PROJECT_BINARY_DIR}/LabCmdConfig.cmake" 
 
 install(FILES
     "${PROJECT_BINARY_DIR}/LabCmdConfig.cmake"
-    DESTINATION "${CMAKE_INSTALL_PREFIX}/cmake")
+    DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake")
 
