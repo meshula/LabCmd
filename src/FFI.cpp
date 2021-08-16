@@ -419,6 +419,8 @@ namespace lab {
         enum { maxConnections = 8 };
         struct WebbyConnection *ws_connections[maxConnections];
 
+        static WebbyServer* server;
+
         static void runServer(const int port, Detail * detail) {
             #if defined(_WIN32)
               {
@@ -449,7 +451,7 @@ namespace lab {
 
             size_t memory_size = WebbyServerMemoryNeeded(&config);
             void * memory = malloc(memory_size);
-            WebbyServer * server = WebbyServerInit(&config, memory, memory_size);
+            server = WebbyServerInit(&config, memory, memory_size);
 
             if (!server)
             {
@@ -601,6 +603,8 @@ namespace lab {
 
     WebSocketsServer::Detail * WebSocketsServer::Detail::singleton = nullptr;
     std::mutex WebSocketsServer::Detail::creationMutex;
+    WebbyServer* WebSocketsServer::Detail::server = nullptr;
+
 
     WebSocketsServer::WebSocketsServer(const std::string & name)
     {
@@ -617,8 +621,13 @@ namespace lab {
 
     WebSocketsServer::~WebSocketsServer()
     {
+        if (WebSocketsServer::Detail::server)
+            WebbyServerShutdown(WebSocketsServer::Detail::server);
+
         if (_detail && !!_detail->serverThread) {
-            _detail->serverThread->join(); // block until done
+            _detail->stop = true;
+            if (_detail->serverThread->joinable())
+                _detail->serverThread->join(); // block until done
             WebSocketsServer::Detail::singleton = nullptr;
         }
     }
@@ -636,10 +645,14 @@ namespace lab {
 
     void WebSocketsServer::stop()
     {
+        if (WebSocketsServer::Detail::server)
+            WebbyServerShutdown(WebSocketsServer::Detail::server);
+
         if (_detail) {
             _detail->stop = true;
             if (!!_detail->serverThread)
-                _detail->serverThread->join();
+                if (_detail->serverThread->joinable())
+                    _detail->serverThread->join();
             _detail->serverThread.reset();
         }
     }
