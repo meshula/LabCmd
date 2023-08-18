@@ -10,11 +10,11 @@
 #include <algorithm>
 
 template <class Slot>
-struct signal
+struct Signal
 {
 private:
 
-	typedef signal<Slot> this_type;
+	typedef Signal<Slot> this_type;
 
 public:
 
@@ -60,13 +60,13 @@ public:
 		emit(std::forward<Args>(args)...);
 	}
 
-	// comparision operators for sorting and comparing
+	// comparison operators for sorting and comparing
 
-	bool operator==(const this_type& signal) const
-	{ return _slots == signal._slots; }
+	bool operator==(const this_type& s) const
+	{ return _slots == s._slots; }
 
-	bool operator!=(const this_type& signal) const
-	{ return !operator==(signal); }
+	bool operator!=(const this_type& s) const
+	{ return _slots != s._slots; }
 
 private:
 

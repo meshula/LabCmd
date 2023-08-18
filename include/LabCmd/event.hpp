@@ -1,4 +1,4 @@
-﻿
+
 // from https://github.com/volcoma/EtherealEngine
 // licensed under BSD 2-clause
 
@@ -17,7 +17,7 @@ private:
 	typedef event<Signature> this_type;
 public:
 	typedef delegate<Signature> delegate_type;
-	typedef signal<delegate_type> signal_type;
+	typedef Signal<delegate_type> signal_type;
 
 
 	/// Connects a slot to the signal

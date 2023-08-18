@@ -45,6 +45,8 @@ set_target_properties(LabCmd PROPERTIES
     OUTPUT_NAME_DEBUG "LabCmd_d"
     INTERFACE_INCLUDE_DIRECTORIES "${LABCMD_ROOT}/include")
 
+target_compile_features(LabCmd PRIVATE cxx_std_17)
+
 add_library(Lab::Cmd ALIAS LabCmd)
 configure_file(LabCmdConfig.cmake.in "${PROJECT_BINARY_DIR}/LabCmdConfig.cmake" @ONLY)
 

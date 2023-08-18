@@ -114,7 +114,7 @@ namespace lab
 
     public:
         template<typename T>
-        using Property = typename SerializableProperty<T, Serializer>;
+        using Property = SerializableProperty<T, Serializer>;
 
         Property<float> gain = { this, "gain", 1.f };
         Property<float> q =    { this, "q",    0.2f };

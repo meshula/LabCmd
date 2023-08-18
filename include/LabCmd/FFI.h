@@ -70,7 +70,7 @@ namespace lab {
 
     class Command {
     public:
-        enum class SemanticType : unsigned int {
+        enum SemanticType {
             bool_st = 0,
             int_st, int2_st, int3_st, int4_st,
             float_st, float2_st, float3_st, float4_st,
